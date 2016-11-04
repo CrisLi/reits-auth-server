@@ -1,0 +1,25 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "env": {
+    "node": true
+  },
+  "parser": "babel-eslint",
+  "rules": {
+    "strict": [2, "never"],
+    "semi": [2, "always"],
+    "babel/generator-star-spacing": 1,
+    "babel/new-cap": 1,
+    "babel/object-shorthand": 1,
+    "babel/arrow-parens": 1,
+    "babel/no-await-in-loop": 1
+  },
+  "plugins": [
+    "babel"
+  ]
+}

@@ -13,7 +13,9 @@
     "express": "^4.14.0",
     "lodash": "^4.16.6",
     "moment": "^2.15.2",
+    "mongoose": "^4.6.6",
     "morgan": "^1.7.0",
+    "speakingurl": "^10.0.0",
     "winston": "^2.3.0"
   },
   "devDependencies": {

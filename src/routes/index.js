@@ -1,3 +1,3 @@
 module.exports = {
-  "/tenants": require('./tenant-routes')
+  "/tenants": require('./tenant-route')
 };

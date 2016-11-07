@@ -1,10 +1,11 @@
 const logger = require('./logger');
 const express = require('express');
 const bodyParser = require('body-parser');
+const validator = require('./validations/express-validator');
 const morgan = require('morgan');
 const routes = require('./routes');
 const db = require('./db');
-const { mapValues } = require('lodash');
+const mongooseErrorHandler = require('./middlewares/mongoose-errror-handler');
 const PORT = process.env['PORT'] || 3000;
 
 const app = express();
@@ -14,6 +15,7 @@ app.use(bodyParser.urlencoded({
   extended: false
 }));
 app.use(bodyParser.json());
+app.use(validator); 
 
 app.get('/', (req, res) => {
   res.json({
@@ -32,22 +34,10 @@ app.use((req, res) => {
   });
 });
 
-const validationErrorHanlder = (err, req, res, next) => {
-  const status = err.status || 400;
-  return res.status(status).json({
-    status,
-    message: err.message,
-    errors: mapValues(err.errors, (field) => field.message)
-  });
-};
-
+app.use(mongooseErrorHandler);
 app.use((err, req, res, next) => {
 
   logger.error(err.message, err);
-
-  if (err.name === 'ValidationError' && err.errors) {
-    return next(err);
-  }
 
   const status = err.status || 500;
   res.status(status).json({
@@ -55,8 +45,6 @@ app.use((err, req, res, next) => {
     message: err.message
   });
 });
-
-app.use(validationErrorHanlder);
 
 module.exports = {
   start() {

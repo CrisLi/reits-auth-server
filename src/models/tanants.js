@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const getSlug = require('speakingurl');
-const Schema = mongoose.Schema;
 const { status } = require('./constants');
+const Schema = mongoose.Schema;
 
 const schema = new Schema({
   name: {

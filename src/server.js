@@ -46,7 +46,7 @@ app.use((err, req, res, next) => {
   logger.error(err.message, err);
 
   if (err.name === 'ValidationError' && err.errors) {
-    next(err);
+    return next(err);
   }
 
   const status = err.status || 500;

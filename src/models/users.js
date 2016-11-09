@@ -1,28 +1,16 @@
 const mongoose = require('mongoose');
-const { omit } = require('lodash');
+const { omit, extend } = require('lodash');
 const passwordEncoder = require('../security/password-encoder');
 const { status } = require('./constants');
-const Schema = mongoose.Schema;
+const createSchema = require('./createSchema');
+const credential = require('./credential');
 
-const schema = new Schema({
+const schema = createSchema(extend({
   tenantId: {
-    type: Schema.Types.ObjectId,
+    type: String,
     ref: 'Tenant',
-    required: true
-  },
-  username: {
-    type: String,
     required: true,
-    validate: {
-      validator(v) {
-        return /^[0-9a-zA-Z_\-\.]+$/.test(v);
-      },
-      message: 'Username name is invalid!'
-    }
-  },
-  password: {
-    type: String,
-    required: true
+    index: true
   },
   identifier: {
     type: String,
@@ -31,13 +19,10 @@ const schema = new Schema({
   },
   status: {
     type: Number,
-    default: status.Active
+    default: status.ENABLED
   },
   description: String
-}, {
-  timestamps: true,
-  collection: 'sys_users'
-});
+}, credential));
 
 schema.pre('validate', function(next) {
   this.identifier = `${this.username}@${this.tenantId}`;
@@ -69,4 +54,4 @@ schema.set('toJSON', {
   }
 });
 
-module.exports = mongoose.model('SysUser', schema);
+module.exports = mongoose.model('User', schema);

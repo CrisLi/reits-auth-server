@@ -1,16 +1,22 @@
 const mongoose = require('mongoose');
 const getSlug = require('speakingurl');
 const { status } = require('./constants');
-const Schema = mongoose.Schema;
+const createSchema = require('./createSchema');
 
-const schema = new Schema({
-  name: {
-    type: String,
-    required: true
-  },
-  slug: {
+const schema = createSchema({
+  _id: {
     type: String,
     unique: true
+  },
+  name: {
+    type: String,
+    required: true,
+    validate: {
+      validator(v) {
+        return /^[0-9a-zA-Z_\-\.() ]+$/.test(v);
+      },
+      message: 'Tenant name is invalid!'
+    }
   },
   status: {
     type: Number,
@@ -30,12 +36,10 @@ const schema = new Schema({
     }
   },
   description: String
-}, {
-  timestamps: true
 });
 
 schema.pre('validate', function (next) {
-  this.slug = getSlug(this.name);
+  this._id = getSlug(this.name);
   next();
 });
 

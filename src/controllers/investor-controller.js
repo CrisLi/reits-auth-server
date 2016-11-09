@@ -1,13 +1,13 @@
-const Tenant = require('../models/tenants');
+const Investor = require('../models/investors');
 
 const findAll = (req, res) => {
-  Tenant.find().then((data) => {
+  Investor.find().then((data) => {
     res.json(data);
   });
 };
 
 const create = (req, res, next) => {
-  Tenant.create(req.body)
+  Investor.create(req.body)
     .then((data) => {
       res.status(201).json(data);
     })

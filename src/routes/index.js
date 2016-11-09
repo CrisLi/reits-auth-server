@@ -1,5 +1,6 @@
 module.exports = {
-  "/": require('./auth-route'),
+  "/auth": require('./auth-route'),
   "/tenants": require('./tenant-route'),
-  "/sys-users": require('./sys-user-route')
+  "/users": require('./user-route'),
+  "/investors": require('./investor-route')
 };

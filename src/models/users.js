@@ -1,45 +1,75 @@
 const mongoose = require('mongoose');
-const { omit, extend } = require('lodash');
+const { difference } = require('lodash');
 const passwordEncoder = require('../security/password-encoder');
-const { status } = require('./constants');
+const { user: { status }, roles, tenant } = require('./constants');
 const createSchema = require('./createSchema');
-const credential = require('./credential');
 
-const schema = createSchema(extend({
+const schema = createSchema({
   tenantId: {
     type: String,
     ref: 'Tenant',
     required: true,
     index: true
   },
+  username: {
+    type: String,
+    required: true,
+    validate: {
+      validator(v) {
+        return /^[0-9a-zA-Z_\-\.]+$/.test(v);
+      },
+      message: 'Username name is invalid!'
+    }
+  },
+  password: {
+    type: String,
+    required: true
+  },
   identifier: {
     type: String,
     required: true,
     unique: true
   },
-  status: {
-    type: Number,
-    default: status.ENABLED
+  roles: {
+    type: [String],
+    validate: {
+      validator(values) {
+        return difference(values, roles).length === 0;
+      },
+      message: `Role must be one of ${roles.join(', ')}.`
+    },
+    required: true,
   },
-  description: String
-}, credential));
+  status: {
+    type: String,
+    default: status.enabled
+  },
+  lastLoginAt: {
+    type: Date,
+    default: Date.now
+  }
+});
 
 schema.pre('validate', function(next) {
   this.identifier = `${this.username}@${this.tenantId}`;
+  if (this.tenantId === tenant.investorId) {
+    this.roles = ['investor'];
+  }
   next();
 });
 
 schema.pre('save', function(next) {
-  this.password = passwordEncoder.encode(this.password);
-  this._id = `${this.name}@${this.tenantId}`;
+  if (this.isNew) {
+    this.password = passwordEncoder.encode(this.password);
+  }
   next();
 });
 
-schema.post('save', (error, doc, next) => {
+schema.post('save', function(error, doc, next) {
   if (error.name === 'MongoError' && error.code === 11000) {
     next({
       status: 409,
-      message: 'Username name duplicated.'
+      message: `This username (${doc.username}) is taken.`
     });
   } else {
     next(error);

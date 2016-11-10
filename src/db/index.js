@@ -12,6 +12,6 @@ module.exports = (cb) => {
       return cb(err);
     };
     logger.info('Connected to mongodb.');
-    cb(null);
+    require('./init-data')(cb);
   });
 };

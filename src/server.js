@@ -51,7 +51,7 @@ module.exports = {
     db((err) => {
       if (err) {
         logger.error(err.message, err);
-        return;
+        process.exit(0);
       };
       app.listen(PORT, (err) => {
         if (err) {

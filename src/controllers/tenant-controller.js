@@ -1,4 +1,5 @@
 const Tenant = require('../models/tenants');
+const { pick } = require('lodash');
 
 const findAll = (req, res) => {
   Tenant.find().then((data) => {
@@ -7,7 +8,8 @@ const findAll = (req, res) => {
 };
 
 const create = (req, res, next) => {
-  Tenant.create(req.body)
+  const tenant = pick(req.body, ['name', 'description', 'profile']);
+  Tenant.create(tenant)
     .then((data) => {
       res.status(201).json(data);
     })

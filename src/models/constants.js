@@ -1,7 +1,17 @@
 module.exports = {
-  status: {
-    DELETED: 0,
-    ENABLED: 1,
-    DISABLE: 2
-  }
+  tenant: {
+    status: {
+      active: 'active'
+    },
+    adminId: 'system-admin',
+    investorId: 'reits-investor'
+  },
+  user: {
+    status: {
+      deleted: 'deleted',
+      enabled: 'enabled',
+      disabled: 'disabled'
+    }
+  },
+  roles: ['admin', 'pm', 'fa', 'finance', 'investor']
 };

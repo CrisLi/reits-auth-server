@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const getSlug = require('speakingurl');
-const { tenant: { status } } = require('./constants');
+const { tenant: { status, types } } = require('./constants');
 const createSchema = require('./createSchema');
 
 const schema = createSchema({
@@ -20,7 +20,7 @@ const schema = createSchema({
   },
   type: {
     type: String,
-    enum: ['admin', 'investor', 'operator'],
+    enum: Object.keys(types),
     default: 'operator'
   },
   status: {

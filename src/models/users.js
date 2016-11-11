@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { difference } = require('lodash');
 const passwordEncoder = require('../security/password-encoder');
-const { user: { status }, roles, tenant } = require('./constants');
+const { user: { status }, tenant } = require('./constants');
 const createSchema = require('./createSchema');
 
 const schema = createSchema({
@@ -32,13 +32,7 @@ const schema = createSchema({
   },
   roles: {
     type: [String],
-    validate: {
-      validator(values) {
-        return difference(values, roles).length === 0;
-      },
-      message: `Role must be one of ${roles.join(', ')}.`
-    },
-    required: true,
+    required: true
   },
   status: {
     type: String,

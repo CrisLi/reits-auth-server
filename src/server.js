@@ -6,6 +6,8 @@ const morgan = require('morgan');
 const routes = require('./routes');
 const db = require('./db');
 const mongooseErrorHandler = require('./middlewares/mongoose-errror-handler');
+const authErrorHandler = require('./middlewares/auth-error-handler');
+const { auth } = require('./security/jwt');
 const PORT = process.env['PORT'] || 3000;
 
 const app = express();
@@ -23,6 +25,8 @@ app.get('/', (req, res) => {
   });
 });
 
+app.use(auth().unless({ path: ['/auth'] }));
+
 Object.keys(routes).forEach((key) => {
   app.use(key, routes[key]);
 });
@@ -35,6 +39,7 @@ app.use((req, res) => {
 });
 
 app.use(mongooseErrorHandler);
+app.use(authErrorHandler);
 app.use((err, req, res, next) => {
 
   logger.error(err.message, err);

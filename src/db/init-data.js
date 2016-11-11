@@ -1,7 +1,8 @@
 const Tenant = require('../models/tenants');
 const User = require('../models/users');
 const logger = require('../logger');
-const { tenant: { adminId, investorId }} = require('../models/constants');
+const data = require('./data.json');
+const { tenant: { admin, investor }} = require('../models/constants');
 
 const handleDuplicatedError = (err) => {
   if (err.status === 409) {
@@ -11,19 +12,19 @@ const handleDuplicatedError = (err) => {
   }
 };
 
-const systemAdminTenant = {
-  name: adminId,
-  type: 'admin',
-  description: 'The system admin tenant. This is predefined by reits auth server.'
-};
-
-const investorTenant = {
-  name: investorId,
-  type: 'investor',
-  description: 'The investors tenant. All users belong to this tenant are investors (portal user).'
-};
-
 const createTenants = () => {
+
+  const systemAdminTenant = {
+    name: admin.name,
+    type: 'admin',
+    description: 'The system admin tenant. This is predefined by reits auth server.'
+  };
+
+  const investorTenant = {
+    name: investor.name,
+    type: 'investor',
+    description: 'The investors tenant. All users belong to this tenant are investors (portal user).'
+  };
 
   const createIfNotExist = (tenant) => {
     return Tenant.create(tenant)
@@ -37,24 +38,29 @@ const createTenants = () => {
 
 };
 
-const adminUser = {
-  username: "admin",
-  password: "helloworld",
-  tenantId: adminId,
-  roles: ['admin'],
-};
+const createUsers = () => {
 
-const createUser = () => {
+  const { username, password } = data.user.admin;
+  const adminUser = {
+    username,
+    password,
+    tenantId: admin.name,
+    roles: ['admin'],
+  };
+
   return User.create(adminUser)
     .then((user) => {
-      logger.info('System admin user created.');
+      logger.info(`[${adminUser.name}] user created.`);
     })
     .catch(handleDuplicatedError);
 };
 
 module.exports = (cb) => {
 
-  const values = [ createTenants, createUser ].map((action) => action());
+  const values = [
+    createTenants,
+    createUsers
+  ].map((action) => action());
 
   Promise
     .all(values)
